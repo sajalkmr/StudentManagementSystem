@@ -1,0 +1,47 @@
+## ---- .NET / ASP.NET Core ----
+
+# Build outputs
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# Test results
+TestResults/
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# Publish output
+publish/
+
+## ---- Sensitive config ----
+# Uncomment the next line if you move the connection string to appsettings.Development.json
+# appsettings.Development.json
+
+## ---- Angular (student-mgmt) ----
+
+student-mgmt/node_modules/
+student-mgmt/dist/
+student-mgmt/tmp/
+student-mgmt/out-tsc/
+student-mgmt/.angular/cache/
+student-mgmt/coverage/
+
+## ---- Logs ----
+*.log
+npm-debug.log*
+yarn-error.log*
+
+## ---- OS files ----
+.DS_Store
+Thumbs.db
