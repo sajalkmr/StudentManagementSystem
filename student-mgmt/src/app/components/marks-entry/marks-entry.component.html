@@ -1,0 +1,70 @@
+<div class="container">
+  <h2>Enter Marks</h2>
+
+  <div class="form-group">
+    <label for="student-select">Select Student:</label>
+    <select id="student-select" (change)="onStudentSelect(students()[$any($event.target).selectedIndex - 1])">
+      <option value="">-- Choose a student --</option>
+      @for (student of students(); track student.id) {
+        <option [ngValue]="student">{{ student.name }}</option>
+      }
+    </select>
+  </div>
+
+  @if (studentName()) {
+    <div class="student-profile">
+      <strong>{{ studentName() }}</strong>
+      <div class="profile-meta">
+        @if (selectedStudent()?.usn) {
+          <span class="meta-badge usn">{{ selectedStudent().usn }}</span>
+        }
+        @if (selectedStudent()?.semester) {
+          <span class="meta-badge">Sem {{ selectedStudent().semester }}</span>
+        }
+        @if (selectedStudent()?.section) {
+          <span class="meta-badge">Sec {{ selectedStudent().section }}</span>
+        }
+      </div>
+    </div>
+
+    <form (ngSubmit)="onSubmit()">
+      <h3>Marks Entry</h3>
+
+      <div class="marks-grid">
+        @for (row of subjectRows(); let i = $index; track i) {
+          <div class="mark-field">
+            <input
+              type="text"
+              [value]="row.name"
+              (change)="onSubjectChange(i, $event.target.value)"
+              placeholder="Subject name"
+              required
+            />
+            <input
+              type="number"
+              min="0"
+              max="100"
+              [value]="row.mark"
+              (change)="onMarkChange(i, +$event.target.value)"
+              placeholder="0-100"
+              required
+            />
+            <button type="button" (click)="removeSubject(i)">Remove</button>
+          </div>
+        }
+      </div>
+
+      <button type="button" (click)="addSubject()">Add Subject</button>
+
+      <button type="submit" [disabled]="isLoading()">
+        {{ isLoading() ? 'Updating...' : 'Update Marks' }}
+      </button>
+    </form>
+
+    @if (message()) {
+      <p class="message" [class.success]="message().toLowerCase().includes('successfully')">
+        {{ message() }}
+      </p>
+    }
+  }
+</div>

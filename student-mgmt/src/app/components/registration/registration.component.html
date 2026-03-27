@@ -1,0 +1,157 @@
+<div class="container">
+  <h2>Student Registration</h2>
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Student Name:</label>
+      <input
+        type="text"
+        id="name"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        name="name"
+        placeholder="Enter student name"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="usn">USN:</label>
+      <input
+        type="text"
+        id="usn"
+        [ngModel]="usn()"
+        (ngModelChange)="usn.set($event)"
+        name="usn"
+        placeholder="Enter USN"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="semester">Semester:</label>
+      <select
+        id="semester"
+        [ngModel]="semester()"
+        (ngModelChange)="semester.set(+$event)"
+        name="semester"
+        required
+      >
+        <option [ngValue]="1">1</option>
+        <option [ngValue]="2">2</option>
+        <option [ngValue]="3">3</option>
+        <option [ngValue]="4">4</option>
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="6">6</option>
+        <option [ngValue]="7">7</option>
+        <option [ngValue]="8">8</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="section">Section:</label>
+      <input
+        type="text"
+        id="section"
+        [ngModel]="section()"
+        (ngModelChange)="section.set($event)"
+        name="section"
+        placeholder="Enter section"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="subjects">Number of Subjects:</label>
+      <input
+        type="number"
+        id="subjects"
+        [ngModel]="subjects()"
+        (ngModelChange)="subjects.set(+$event)"
+        name="subjects"
+        min="1"
+        max="20"
+        required
+      />
+    </div>
+
+    <button type="submit" [disabled]="isLoading()">
+      {{ isLoading() ? 'Registering...' : 'Register Student' }}
+    </button>
+  </form>
+
+ 
+
+  @if (message()) {
+    <p class="message" [class.success]="message().toLowerCase().includes('successfully')">{{ message() }}</p>
+  }
+</div>
+
+@if (editingStudent()) {
+  <div class="modal-overlay" (click)="onCancelEdit()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Edit Student</h3>
+
+      <div class="form-group">
+        <label for="editName">Student Name:</label>
+        <input
+          type="text"
+          id="editName"
+          [ngModel]="editName()"
+          (ngModelChange)="editName.set($event)"
+          name="editName"
+          placeholder="Enter student name"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="editUsn">USN:</label>
+        <input
+          type="text"
+          id="editUsn"
+          [ngModel]="editUsn()"
+          (ngModelChange)="editUsn.set($event)"
+          name="editUsn"
+          placeholder="Enter USN"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="editSemester">Semester:</label>
+        <select
+          id="editSemester"
+          [ngModel]="editSemester()"
+          (ngModelChange)="editSemester.set(+$event)"
+          name="editSemester"
+        >
+          <option [ngValue]="1">1</option>
+          <option [ngValue]="2">2</option>
+          <option [ngValue]="3">3</option>
+          <option [ngValue]="4">4</option>
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="6">6</option>
+          <option [ngValue]="7">7</option>
+          <option [ngValue]="8">8</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="editSection">Section:</label>
+        <input
+          type="text"
+          id="editSection"
+          [ngModel]="editSection()"
+          (ngModelChange)="editSection.set($event)"
+          name="editSection"
+          placeholder="Enter section"
+        />
+      </div>
+
+      <div class="modal-actions">
+        <button class="save-btn" (click)="onSaveEdit()" [disabled]="isSaving()">
+          {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+        </button>
+        <button class="cancel-btn" (click)="onCancelEdit()">Cancel</button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,183 @@
+﻿<div class="container">
+  <h2>Student Report</h2>
+
+  @if (classes().length === 0) {
+    <p class="empty-msg">No student data found. Register students or load sample data first.</p>
+  } @else {
+
+    <!-- Class tabs -->
+    <div class="class-tabs">
+      @for (cls of classes(); track cls.key) {
+        <button
+          class="class-tab"
+          [class.active]="selectedClass()?.key === cls.key"
+          (click)="onClassSelect(cls)"
+        >
+          {{ cls.label }}
+          <span class="tab-count">{{ cls.students.length }}</span>
+        </button>
+      }
+    </div>
+
+    @if (selectedClass() && classStats()) {
+      <div class="class-section">
+
+        <!-- Class stat cards -->
+        <div class="overview-stats">
+          <div class="stat-card total">
+            <div class="stat-label">Total</div>
+            <div class="stat-value">{{ classStats()!.total }}</div>
+          </div>
+          <div class="stat-card pass">
+            <div class="stat-label">Passed</div>
+            <div class="stat-value">{{ classStats()!.pass }}</div>
+          </div>
+          <div class="stat-card fail">
+            <div class="stat-label">Failed</div>
+            <div class="stat-value">{{ classStats()!.fail }}</div>
+          </div>
+          <div class="stat-card rate">
+            <div class="stat-label">Pass Rate</div>
+            <div class="stat-value">
+              {{ classStats()!.total > 0 ? ((classStats()!.pass / classStats()!.total) * 100).toFixed(0) : 0 }}%
+            </div>
+          </div>
+          <div class="stat-card avg">
+            <div class="stat-label">Class Avg</div>
+            <div class="stat-value">{{ classStats()!.avgScore }}</div>
+          </div>
+          <div class="stat-card top">
+            <div class="stat-label">Top Performer</div>
+            <div class="stat-value top-name">{{ classStats()!.topStudent }}</div>
+          </div>
+        </div>
+
+        <!-- Class-level charts -->
+        <div class="charts-row">
+          @if (classBarChart()) {
+            <div class="chart-box">
+              <h4>
+                Subject-wise Class Average
+                <span class="chart-legend">
+                  <span class="dot pass"></span>&gt;=50 &nbsp;
+                  <span class="dot fail"></span>&lt;50
+                </span>
+              </h4>
+              <div class="chart-container">
+                <canvas baseChart
+                  [data]="classBarChart()!.data"
+                  [options]="classBarChart()!.options"
+                  [type]="classBarChart()!.type">
+                </canvas>
+              </div>
+            </div>
+          }
+          @if (classPieChart()) {
+            <div class="chart-box">
+              <h4>Pass / Fail Distribution</h4>
+              <div class="chart-container pie">
+                <canvas baseChart
+                  [data]="classPieChart()!.data"
+                  [options]="classPieChart()!.options"
+                  [type]="classPieChart()!.type">
+                </canvas>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Student table -->
+        <div class="student-table-section">
+          <h4>Students in {{ selectedClass()!.label }} <span class="hint">(click a row for details)</span></h4>
+          <table class="student-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>USN</th>
+                <th>Avg</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (student of selectedClass()!.students; track student.id; let i = $index) {
+                <tr
+                  [class.selected-row]="selectedStudent()?.id === student.id"
+                  (click)="onStudentSelect(student)"
+                >
+                  <td class="idx-cell">{{ i + 1 }}</td>
+                  <td class="name-cell">{{ student.name }}</td>
+                  <td class="usn-cell">{{ student.usn }}</td>
+                  <td>{{ getStudentAvg(student) }}</td>
+                  <td>
+                    <span class="status-badge"
+                      [class.pass]="getStudentAvg(student) >= 50"
+                      [class.fail]="getStudentAvg(student) < 50">
+                      {{ getStudentAvg(student) >= 50 ? 'Pass' : 'Fail' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Individual student detail panel -->
+        @if (selectedStudent()) {
+          <div class="student-detail">
+            <div class="detail-header">
+              <h4>{{ selectedStudent()!.name }}</h4>
+              <div class="profile-meta">
+                @if (selectedStudent()!.usn) {
+                  <span class="meta-badge usn">{{ selectedStudent()!.usn }}</span>
+                }
+                <span class="meta-badge">Sem {{ selectedStudent()!.semester }}</span>
+                <span class="meta-badge">Sec {{ selectedStudent()!.section }}</span>
+              </div>
+            </div>
+
+            @if (isLoading()) {
+              <p>Loading...</p>
+            } @else if (studentResults()) {
+              <div class="results-summary">
+                <div class="result-card">
+                  <div class="result-label">Total Marks</div>
+                  <div class="result-value">{{ studentResults()!.total }}</div>
+                </div>
+                <div class="result-card">
+                  <div class="result-label">Average</div>
+                  <div class="result-value">{{ studentResults()!.average.toFixed(1) }}</div>
+                </div>
+                <div class="result-card"
+                  [style.border-left]="'4px solid ' + getGradeColor(studentResults()!.grade)">
+                  <div class="result-label">Grade</div>
+                  <div class="result-value grade">{{ studentResults()!.grade }}</div>
+                </div>
+              </div>
+
+              @if (studentBarChart()) {
+                <div class="chart-box" style="margin-top: 16px">
+                  <h4>
+                    Subject-wise Marks
+                    <span class="chart-legend">
+                      <span class="dot pass"></span>Pass &nbsp;
+                      <span class="dot fail"></span>Fail
+                    </span>
+                  </h4>
+                  <div class="chart-container">
+                    <canvas baseChart
+                      [data]="studentBarChart()!.data"
+                      [options]="studentBarChart()!.options"
+                      [type]="studentBarChart()!.type">
+                    </canvas>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+        }
+
+      </div>
+    }
+  }
+</div>
